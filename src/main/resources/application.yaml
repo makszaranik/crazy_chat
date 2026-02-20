@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: crazy-chat
+  graphql:
+    http:
+      sse:
+        keep-alive: 60s
+  rabbitmq:
+    host: localhost
+    username: guest
+    password: guest
+  mongodb:
+    uri: mongodb://root:example@localhost:27017/crazy_chat?authSource=admin

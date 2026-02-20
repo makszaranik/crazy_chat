@@ -1,0 +1,76 @@
+type Chat {
+    id: ID!
+    name: String
+    type: ChatType!
+    messageIds: [ID!]
+    participantIds: [ID!]!
+}
+
+enum ChatType {
+    PRIVATE,
+    GROUP
+}
+
+interface Message {
+    id: ID!
+    chatId: ID!
+    senderId: ID!
+}
+
+type TextMessage implements Message {
+    id: ID!
+    chatId: ID!
+    senderId: ID!
+    content: String!
+}
+
+type FileMessage implements Message {
+    id: ID!
+    chatId: ID!
+    senderId: ID!
+    fileId: ID!
+}
+
+type Participant {
+    id: ID!
+    username: String!
+}
+
+input CreateChatInput {
+    type: ChatType!
+    name: String!
+}
+
+input SendTextMessageInput {
+    chatId: ID!
+    content: String!
+}
+
+input SendFileMessageInput {
+    chatId: ID!
+    fileName: String!
+}
+
+input ChatParticipantEventInput {
+    chatId: ID!
+    participantId: ID!
+}
+
+
+type Query {
+    chat(id: ID!): Chat
+}
+
+type Mutation {
+    createChat(chat: CreateChatInput!): Chat!
+    sendTextMessage(message: SendTextMessageInput!): TextMessage!
+    sendFileMessage(message: SendFileMessageInput!): FileMessage!
+    joinChat(chatEvent: ChatParticipantEventInput!): Boolean!
+    leaveChat(chatEvent: ChatParticipantEventInput!): Boolean!
+}
+
+type Subscription {
+    messageSendEvent(chatId: ID!): Message!
+    participantJoinedEvent(chatId: ID!): Participant!
+    participantLeftEvent(chatId: ID!): Participant!
+}
