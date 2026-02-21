@@ -1,13 +1,10 @@
-package com.example.crazy_chat.dto.message;
+package com.example.crazy_chat.dto.message.input;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.Builder;
 
 @Builder
-public record TextMessageDto(
-    @Null String id,
+public record TextMessageRequest(
     @NotNull String chatId,
-    @Null String senderId,
     @NotNull String content
-) implements MessageDto {}
+) {}

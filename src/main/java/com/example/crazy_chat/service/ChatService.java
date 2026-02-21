@@ -29,4 +29,16 @@ public class ChatService {
         return chatRepository.findById(id);
     }
 
+    public void addParticipantToChat(String chatId, String participantId) {
+        ChatEntity chat = findChatById(chatId).orElseThrow(() -> new ChatNotFoundException(participantId));
+        chat.getParticipantIds().add(participantId);
+        chatRepository.save(chat);
+    }
+
+    public void removeParticipantFromChat(String chatId, String participantId) {
+        ChatEntity chat = findChatById(chatId).orElseThrow(() -> new ChatNotFoundException(participantId));
+        chat.getParticipantIds().remove(participantId);
+        chatRepository.save(chat);
+    }
+
 }

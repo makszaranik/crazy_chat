@@ -10,7 +10,7 @@ import reactor.core.publisher.Sinks;
 
 @Service
 @RequiredArgsConstructor
-public class MessagePublisherService {
+public class MessageService {
 
     private final MessageRepository messageRepository;
     private final Sinks.Many<MessageEntity> messageBuffer = Sinks.many().multicast().directBestEffort();
@@ -19,11 +19,11 @@ public class MessagePublisherService {
         return messageRepository.save(messageEntity);
     }
 
-    public Flux<MessageEntity> fetchMessages() {
+    public Flux<MessageEntity> fetchEvents() {
         return messageBuffer.asFlux();
     }
 
-    public void publishMessage(MessageEntity message) {
+    public void publishMessageEvent(MessageEntity message) {
         messageBuffer.tryEmitNext(message);
     }
 

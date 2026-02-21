@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record ParticipantEvent(
+public record ParticipantEventResponse(
     @NotNull String chatId,
     @NotNull String participantId,
     @NotNull EventType event

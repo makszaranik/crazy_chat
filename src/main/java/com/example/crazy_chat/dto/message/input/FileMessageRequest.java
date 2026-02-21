@@ -1,11 +1,10 @@
-package com.example.crazy_chat.dto.message;
+package com.example.crazy_chat.dto.message.input;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.Builder;
 
 @Builder
-public record FileMessageDto(
+public record FileMessageRequest(
     @NotNull String chatId,
     @NotNull String fileId
-) implements MessageDto {}
+) {}

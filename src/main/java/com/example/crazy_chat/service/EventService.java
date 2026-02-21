@@ -1,9 +1,7 @@
 package com.example.crazy_chat.service;
 
-import com.example.crazy_chat.domains.message.FileMessageEntity;
 import com.example.crazy_chat.domains.message.MessageEntity;
-import com.example.crazy_chat.domains.message.TextMessageEntity;
-import com.example.crazy_chat.dto.message.TextMessageDto;
+import com.example.crazy_chat.dto.participant.output.ParticipantEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -20,7 +18,12 @@ public class EventService {
     public static final String MESSAGE_QUEUE = "crazy_chat.message.queue";
     public static final String MESSAGE_EXCHANGE = "crazy_chat.message.exchange";
 
-    private final MessagePublisherService messagePublisherService;
+    public static final String PARTICIPANT_EVENT_QUEUE = "crazy_chat.participant.event.queue";
+    public static final String PARTICIPANT_EVENT_EXCHANGE = "crazy_chat.participant.event.exchange";
+
+    private final MessageService messageService;
+    private final ParticipantService participantService;
+
 
     @RabbitListener(
         bindings = @QueueBinding(
@@ -29,9 +32,23 @@ public class EventService {
             key = MESSAGE_QUEUE
         )
     )
-    public void fetchMessages(MessageEntity message) {
+    public void fetchMessageEvents(MessageEntity message) {
         log.info("Fetching message: {}", message);
-        messagePublisherService.publishMessage(message);
+        messageService.publishMessageEvent(message);
     }
+
+
+    @RabbitListener(
+        bindings = @QueueBinding(
+            value = @Queue(value = PARTICIPANT_EVENT_QUEUE),
+            exchange = @Exchange(value = PARTICIPANT_EVENT_EXCHANGE),
+            key = PARTICIPANT_EVENT_QUEUE
+        )
+    )
+    public void fetchParticipantEvents(ParticipantEventResponse event) {
+        log.info("Fetching participant event: {}", event);
+        participantService.publishEvent(event);
+    }
+
 
 }

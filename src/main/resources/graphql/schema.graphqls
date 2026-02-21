@@ -51,11 +51,22 @@ input SendFileMessageInput {
     fileName: String!
 }
 
-input ChatParticipantEventInput {
+input ParticipantEventInput {
     chatId: ID!
     participantId: ID!
+    event: EventType!
 }
 
+enum EventType {
+    JOIN,
+    LEAVE
+}
+
+type ParticipantEvent {
+    chatId: ID!
+    participantId: ID!
+    event: EventType!
+}
 
 type Query {
     chat(id: ID!): Chat
@@ -65,12 +76,10 @@ type Mutation {
     createChat(chat: CreateChatInput!): Chat!
     sendTextMessage(message: SendTextMessageInput!): TextMessage!
     sendFileMessage(message: SendFileMessageInput!): FileMessage!
-    joinChat(chatEvent: ChatParticipantEventInput!): Boolean!
-    leaveChat(chatEvent: ChatParticipantEventInput!): Boolean!
+    chatParticipantAction(chatEvent: ParticipantEventInput!): Boolean!
 }
 
 type Subscription {
     messageSendEvent(chatId: ID!): Message!
-    participantJoinedEvent(chatId: ID!): Participant!
-    participantLeftEvent(chatId: ID!): Participant!
+    chatParticipantEvent(chatId: ID!): ParticipantEvent!
 }
