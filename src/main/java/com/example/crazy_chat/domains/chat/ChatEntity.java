@@ -1,5 +1,7 @@
 package com.example.crazy_chat.domains.chat;
 
+import com.example.crazy_chat.domains.message.MessageEntity;
+import com.example.crazy_chat.domains.participant.ParticipantEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,8 +25,7 @@ public class ChatEntity {
     private String id;
     private String name;
     private ChatType type;
-    private List<String> messageIds;
-    private List<String> participantIds;
+    private List<ParticipantEntity> participants;
 
     @CreatedDate
     private LocalDateTime createdAt;

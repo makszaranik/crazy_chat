@@ -17,5 +17,4 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 public final class FileMessageEntity extends MessageEntity implements Serializable {
     private String s3FileId;
-    private String contentType;
 }

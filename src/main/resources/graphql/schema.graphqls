@@ -2,8 +2,8 @@ type Chat {
     id: ID!
     name: String
     type: ChatType!
-    messageIds: [ID!]
-    participantIds: [ID!]!
+    messages: [Message!]
+    participant: [Participant!]
 }
 
 enum ChatType {

@@ -2,9 +2,11 @@ package com.example.crazy_chat.controller;
 
 import com.example.crazy_chat.domains.chat.ChatEntity;
 import com.example.crazy_chat.domains.message.FileMessageEntity;
+import com.example.crazy_chat.domains.message.MessageEntity;
 import com.example.crazy_chat.domains.message.TextMessageEntity;
-import com.example.crazy_chat.dto.chat.ChatDto;
-import com.example.crazy_chat.dto.chat.CreateChatDto;
+import com.example.crazy_chat.domains.participant.ParticipantEntity;
+import com.example.crazy_chat.dto.chat.ChatResponse;
+import com.example.crazy_chat.dto.chat.CreateChatRequest;
 import com.example.crazy_chat.dto.message.MessageResponse;
 import com.example.crazy_chat.dto.message.input.TextMessageRequest;
 import com.example.crazy_chat.dto.message.output.FileMessageResponse;
@@ -21,11 +23,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -39,25 +44,43 @@ public class ChatController {
     private final ParticipantService participantService;
 
 
+    @QueryMapping
+    public ChatResponse chat(@Argument String id) {
+
+        ChatEntity chat = chatService.findChatById(id);
+
+        List<MessageEntity> messages = chatService.getMessages(chat.getId());
+        List<ParticipantEntity> participants = chat.getParticipants();
+
+        return ChatResponse.builder()
+            .id(chat.getId())
+            .name(chat.getName())
+            .type(chat.getType())
+            .messages(messageService.toMessageResponse(messages))
+            .participants(participantService.toParticipantResponse(participants))
+            .build();
+    }
+
+
     @MutationMapping
-    public ChatDto createChat(@Valid @Argument CreateChatDto chat) {
+    public ChatResponse createChat(@Valid @Argument CreateChatRequest chat) {
 
         ChatEntity chatEntity = ChatEntity.builder()
             .type(chat.type())
             .name(chat.name())
-            .messageIds(new ArrayList<>())
-            .participantIds(new ArrayList<>())
+            .participants(new ArrayList<>())
             .build();
 
         ChatEntity createdChat = chatService.createChat(chatEntity);
         log.info("chat created: {}", chat);
 
-        return ChatDto.builder()
+
+        return ChatResponse.builder()
             .id(createdChat.getId())
             .name(createdChat.getName())
             .type(createdChat.getType())
-            .messageIds(createdChat.getMessageIds())
-            .participantIds(createdChat.getParticipantIds())
+            .messages(new ArrayList<>())
+            .participants(new ArrayList<>())
             .build();
     }
 

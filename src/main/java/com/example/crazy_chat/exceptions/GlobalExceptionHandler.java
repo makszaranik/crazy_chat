@@ -19,4 +19,13 @@ public class GlobalExceptionHandler {
             .build();
     }
 
+    @ExceptionHandler(ParticipantNotInChatException.class)
+    GraphQLError chatNotFoundException(ParticipantNotInChatException exception, DataFetchingEnvironment environment) {
+        return GraphQLError.newError()
+            .message(exception.getMessage())
+            .errorType(ErrorType.DataFetchingException)
+            .path(environment.getExecutionStepInfo().getPath())
+            .build();
+    }
+
 }

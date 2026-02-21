@@ -60,6 +60,12 @@
             <artifactId>s3</artifactId>
             <version>2.25.35</version>
         </dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
