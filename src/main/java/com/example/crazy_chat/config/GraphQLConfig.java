@@ -2,6 +2,8 @@ package com.example.crazy_chat.config;
 
 import com.example.crazy_chat.dto.message.input.FileMessageRequest;
 import com.example.crazy_chat.dto.message.input.TextMessageRequest;
+import com.example.crazy_chat.dto.message.output.FileMessageResponse;
+import com.example.crazy_chat.dto.message.output.TextMessageResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.ClassNameTypeResolver;
@@ -13,8 +15,8 @@ public class GraphQLConfig {
     @Bean
     public RuntimeWiringConfigurer runtimeWiringConfigurer() {
         ClassNameTypeResolver resolver = new ClassNameTypeResolver();
-        resolver.addMapping(TextMessageRequest.class, "TextMessage");
-        resolver.addMapping(FileMessageRequest.class, "FileMessage");
+        resolver.addMapping(TextMessageResponse.class, "TextMessage");
+        resolver.addMapping(FileMessageResponse.class, "FileMessage");
         return builder -> builder.type("Message", typeWiring -> typeWiring.typeResolver(resolver));
     }
 
