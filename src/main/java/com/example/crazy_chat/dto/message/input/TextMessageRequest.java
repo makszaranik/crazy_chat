@@ -5,9 +5,9 @@ import jakarta.validation.constraints.Null;
 import lombok.Builder;
 
 @Builder
-public record FileMessageDto(
+public record TextMessageDto(
     @Null String id,
     @NotNull String chatId,
-    @NotNull String senderId,
-    @NotNull String fileId
+    @Null String senderId,
+    @NotNull String content
 ) implements MessageDto {}
