@@ -3,7 +3,7 @@ package com.example.crazy_chat.service;
 import com.example.crazy_chat.domains.message.FileMessageEntity;
 import com.example.crazy_chat.domains.message.MessageEntity;
 import com.example.crazy_chat.domains.message.TextMessageEntity;
-import com.example.crazy_chat.dto.message.MessageResponse;
+import com.example.crazy_chat.dto.message.output.MessageResponse;
 import com.example.crazy_chat.dto.message.output.FileMessageResponse;
 import com.example.crazy_chat.dto.message.output.TextMessageResponse;
 import com.example.crazy_chat.repository.MessageRepository;

@@ -7,7 +7,7 @@ import com.example.crazy_chat.domains.message.TextMessageEntity;
 import com.example.crazy_chat.domains.participant.ParticipantEntity;
 import com.example.crazy_chat.dto.chat.ChatResponse;
 import com.example.crazy_chat.dto.chat.CreateChatRequest;
-import com.example.crazy_chat.dto.message.MessageResponse;
+import com.example.crazy_chat.dto.message.output.MessageResponse;
 import com.example.crazy_chat.dto.message.input.TextMessageRequest;
 import com.example.crazy_chat.dto.message.output.FileMessageResponse;
 import com.example.crazy_chat.dto.message.output.TextMessageResponse;
@@ -68,7 +68,7 @@ public class ChatController {
             .build();
 
         ChatEntity createdChat = chatService.createChat(chatEntity);
-        log.info("chat created: {}", chat);
+        log.debug("chat created: {}", chat);
 
 
         return ChatResponse.builder()
@@ -97,7 +97,7 @@ public class ChatController {
             savedMessage
         );
 
-        log.info("sent message: {}", savedMessage);
+        log.debug("sent message: {}", savedMessage);
 
         return TextMessageResponse.builder()
             .id(savedMessage.getId())

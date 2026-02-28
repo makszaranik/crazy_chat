@@ -1,6 +1,5 @@
 package com.example.crazy_chat.dto.message.output;
 
-import com.example.crazy_chat.dto.message.MessageResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
