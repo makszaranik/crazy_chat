@@ -1,7 +1,7 @@
 package com.example.crazy_chat.service;
 
 import com.example.crazy_chat.domains.participant.ParticipantEntity;
-import com.example.crazy_chat.dto.participant.output.ParticipantEventResponse;
+import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
 import com.example.crazy_chat.dto.participant.output.ParticipantResponse;
 import com.example.crazy_chat.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +16,17 @@ import java.util.List;
 public class ParticipantService {
 
     private final ParticipantRepository participantRepository;
-    private final Sinks.Many<ParticipantEventResponse> events = Sinks.many().multicast().directBestEffort();
+    private final Sinks.Many<ParticipantChatEventResponse> events = Sinks.many().multicast().directBestEffort();
 
     public ParticipantEntity getCurrentParticipant() {
         return ParticipantEntity.builder().username("max").id("12415124213412").build();
     }
 
-    public void publishEvent(ParticipantEventResponse eventDto) {
+    public void publishEvent(ParticipantChatEventResponse eventDto) {
         events.tryEmitNext(eventDto);
     }
 
-    public Flux<ParticipantEventResponse> fetchEvents() {
+    public Flux<ParticipantChatEventResponse> fetchEvents() {
         return events.asFlux();
     }
 

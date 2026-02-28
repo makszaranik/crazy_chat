@@ -1,7 +1,7 @@
 package com.example.crazy_chat.service;
 
 import com.example.crazy_chat.domains.message.MessageEntity;
-import com.example.crazy_chat.dto.participant.output.ParticipantEventResponse;
+import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -45,7 +45,7 @@ public class EventService {
             key = PARTICIPANT_EVENT_QUEUE
         )
     )
-    public void fetchParticipantEvents(ParticipantEventResponse event) {
+    public void fetchParticipantEvents(ParticipantChatEventResponse event) {
         log.info("Fetching participant event: {}", event);
         participantService.publishEvent(event);
     }

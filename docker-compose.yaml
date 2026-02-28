@@ -40,4 +40,3 @@ volumes:
   crazy_chat_mongo_data:
   crazy_chat_minio_data:
 
-

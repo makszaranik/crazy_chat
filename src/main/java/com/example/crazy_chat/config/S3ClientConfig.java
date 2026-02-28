@@ -1,6 +1,9 @@
 package com.example.crazy_chat.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -14,24 +17,20 @@ import java.net.URI;
 
 
 @Configuration
+@RequiredArgsConstructor
 public class S3ClientConfig {
 
-    @Value("${spring.minio.access-key}")
-    private String accessKey;
-
-    @Value("${spring.minio.secret-key}")
-    private String secretKey;
-
-    @Value("${spring.minio.endpoint}")
-    private String endpoint;
-
+    private final S3PropertiesHolder s3PropertiesHolder;
 
     @Bean
     public S3Client s3Client() {
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(
+            s3PropertiesHolder.accessKey(),
+            s3PropertiesHolder.secretKey()
+        );
 
         return S3Client.builder()
-            .endpointOverride(URI.create(endpoint))
+            .endpointOverride(URI.create(s3PropertiesHolder.endpoint()))
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .region(Region.US_EAST_1)
             .serviceConfiguration(S3Configuration.builder()
@@ -42,10 +41,13 @@ public class S3ClientConfig {
 
     @Bean
     public S3Presigner s3Presigner() {
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(
+            s3PropertiesHolder.accessKey(),
+            s3PropertiesHolder.secretKey()
+        );
 
         return S3Presigner.builder()
-            .endpointOverride(URI.create(endpoint))
+            .endpointOverride(URI.create(s3PropertiesHolder.endpoint()))
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .region(Region.US_EAST_1)
             .serviceConfiguration(S3Configuration.builder()
@@ -53,6 +55,14 @@ public class S3ClientConfig {
                 .build())
             .build();
     }
+
+    @ConfigurationProperties(prefix = "s3")
+    public record S3PropertiesHolder(
+        String endpoint,
+        String accessKey,
+        String secretKey,
+        String bucket
+    ) {}
 
 }
 

@@ -12,7 +12,7 @@ import com.example.crazy_chat.dto.message.input.TextMessageRequest;
 import com.example.crazy_chat.dto.message.output.FileMessageResponse;
 import com.example.crazy_chat.dto.message.output.TextMessageResponse;
 import com.example.crazy_chat.dto.participant.input.ParticipantEventRequest;
-import com.example.crazy_chat.dto.participant.output.ParticipantEventResponse;
+import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
 import com.example.crazy_chat.service.ChatService;
 import com.example.crazy_chat.service.EventService;
 import com.example.crazy_chat.service.MessageService;
@@ -30,7 +30,6 @@ import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 
 @Slf4j
@@ -83,7 +82,6 @@ public class ChatController {
             .participants(new ArrayList<>())
             .build();
     }
-
 
     @MutationMapping
     public TextMessageResponse sendTextMessage(@Valid @Argument TextMessageRequest message) {
@@ -155,7 +153,7 @@ public class ChatController {
 
 
     @SubscriptionMapping
-    public Flux<ParticipantEventResponse> chatParticipantEvent(@Argument String chatId) {
+    public Flux<ParticipantChatEventResponse> chatParticipantEvent(@Argument String chatId) {
         return participantService.fetchEvents().filter(event -> event.chatId().equals(chatId));
     }
 

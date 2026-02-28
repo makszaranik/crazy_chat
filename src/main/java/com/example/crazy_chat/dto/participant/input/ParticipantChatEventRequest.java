@@ -1,10 +1,10 @@
-package com.example.crazy_chat.dto.participant.output;
+package com.example.crazy_chat.dto.participant.input;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record ParticipantEventResponse(
+public record ParticipantChatEventRequest(
     @NotNull String chatId,
     @NotNull String participantId,
     @NotNull EventType event
