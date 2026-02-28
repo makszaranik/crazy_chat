@@ -33,7 +33,7 @@ public class EventService {
         )
     )
     public void fetchMessageEvents(MessageEntity message) {
-        log.info("Fetching message: {}", message);
+        log.debug("Fetching message: {}", message);
         messageService.publishMessageEvent(message);
     }
 
@@ -46,7 +46,7 @@ public class EventService {
         )
     )
     public void fetchParticipantEvents(ParticipantChatEventResponse event) {
-        log.info("Fetching participant event: {}", event);
+        log.debug("Fetching participant event: {}", event);
         participantService.publishEvent(event);
     }
 

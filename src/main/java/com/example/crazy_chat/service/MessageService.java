@@ -35,7 +35,6 @@ public class MessageService {
 
     public MessageResponse toMessageResponse(MessageEntity message) {
         return switch (message) {
-
             case TextMessageEntity textMessage -> TextMessageResponse.builder()
                 .id(textMessage.getId())
                 .chatId(textMessage.getChatId())
