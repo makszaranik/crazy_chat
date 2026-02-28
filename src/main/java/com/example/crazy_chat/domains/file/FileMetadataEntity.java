@@ -21,7 +21,8 @@ public class FileMetadataEntity {
 
     @Id
     private String fileId;
-    private Long fileSize;
+    private int fileName;
+    private int contentLength;
     private String contentType;
 
     @CreatedBy

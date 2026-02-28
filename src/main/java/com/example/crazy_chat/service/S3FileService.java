@@ -13,6 +13,7 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.UploadPartPresignRequest;
 
 import java.io.IOException;
@@ -100,7 +101,22 @@ public class S3FileService {
     }
 
 
-    public long getPartsNumber(int fileSize) {
+    public String getDownloadLink(String fileId) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+            .key(fileId)
+            .bucket(s3PropertiesHolder.bucket())
+            .build();
+
+        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(10))
+            .getObjectRequest(getObjectRequest)
+            .build();
+
+        return s3Presigner.presignGetObject(getObjectPresignRequest).url().toString();
+    }
+
+
+    private long getPartsNumber(int fileSize) {
         long partSize = DataSize.ofMegabytes(10).toBytes();
         return (fileSize + partSize - 1) / partSize;
     }

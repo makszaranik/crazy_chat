@@ -68,11 +68,37 @@ type ParticipantEvent {
     event: EventType!
 }
 
+input InitMultipartUploadRequest {
+    fileName: String!
+    fileSize: Int!
+    contentType: String!
+}
+
+type MultipartUploadResponse {
+    uploadId: String!,
+    parts: Int!
+    urls: [String!]!
+}
+
+input CompleteMultipartRequest {
+    fileId: String!
+    uploadId: String!
+    parts: [CompletedParts!]!
+}
+
+input CompletedParts {
+    partNumber: Int!
+    etag: String!
+}
+
 type Query {
     chat(id: ID!): Chat
+    getDownloadLink(fileId: String!): String!
 }
 
 type Mutation {
+    initiateUpload(request: InitMultipartUploadRequest!): MultipartUploadResponse!
+    completeUpload(request: CompleteMultipartRequest!): ???
     createChat(chat: CreateChatInput!): Chat!
     sendTextMessage(message: SendTextMessageInput!): TextMessage!
     sendFileMessage(message: SendFileMessageInput!): FileMessage!

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 import java.util.List;
 
 public record CompleteMultipartRequest(
-    @NotNull String filename,
+    @NotNull String fileId,
     @NotNull String uploadId,
     @NotNull List<CompletedPart> parts
 ) {

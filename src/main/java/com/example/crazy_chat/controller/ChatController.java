@@ -11,7 +11,6 @@ import com.example.crazy_chat.dto.message.MessageResponse;
 import com.example.crazy_chat.dto.message.input.TextMessageRequest;
 import com.example.crazy_chat.dto.message.output.FileMessageResponse;
 import com.example.crazy_chat.dto.message.output.TextMessageResponse;
-import com.example.crazy_chat.dto.participant.input.ParticipantEventRequest;
 import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
 import com.example.crazy_chat.service.ChatService;
 import com.example.crazy_chat.service.EventService;
@@ -45,7 +44,6 @@ public class ChatController {
 
     @QueryMapping
     public ChatResponse chat(@Argument String id) {
-
         ChatEntity chat = chatService.findChatById(id);
 
         List<MessageEntity> messages = chatService.getMessages(chat.getId());
@@ -63,7 +61,6 @@ public class ChatController {
 
     @MutationMapping
     public ChatResponse createChat(@Valid @Argument CreateChatRequest chat) {
-
         ChatEntity chatEntity = ChatEntity.builder()
             .type(chat.type())
             .name(chat.name())
@@ -85,7 +82,6 @@ public class ChatController {
 
     @MutationMapping
     public TextMessageResponse sendTextMessage(@Valid @Argument TextMessageRequest message) {
-
         TextMessageEntity messageEntity = TextMessageEntity.builder()
             .chatId(message.chatId())
             .senderId(participantService.getCurrentParticipant().getId())
@@ -113,8 +109,7 @@ public class ChatController {
 
 
     @MutationMapping
-    public Boolean chatParticipantAction(@Valid @Argument ParticipantEventRequest chatEvent) {
-
+    public Boolean chatParticipantAction(@Valid @Argument ParticipantChatEventResponse chatEvent) {
         switch (chatEvent.event()) {
             case JOIN -> chatService.addParticipantToChat(chatEvent.chatId(), chatEvent.participantId());
             case LEAVE -> chatService.removeParticipantFromChat(chatEvent.chatId(), chatEvent.participantId());
