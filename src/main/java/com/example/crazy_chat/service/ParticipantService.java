@@ -11,6 +11,7 @@ import reactor.core.publisher.Sinks;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +36,14 @@ public class ParticipantService {
     public ParticipantEntity fetchParticipantById(String participantId) {
         return participantRepository.findById(participantId)
             .orElseThrow(() -> new IllegalStateException("Participant with id " + participantId + " not found"));
+    }
+
+    public Optional<ParticipantEntity> fetchParticipantByUsername(String username){
+        return participantRepository.findParticipantEntityByUsername(username);
+    }
+
+    public ParticipantEntity save(ParticipantEntity participant){
+        return participantRepository.save(participant);
     }
 
     public List<ParticipantEntity> fetchParticipantsByIds(List<String> participantIds) {

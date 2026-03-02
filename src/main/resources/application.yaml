@@ -1,16 +1,35 @@
 spring:
   application:
     name: crazy-chat
+
   graphql:
     http:
       sse:
         keep-alive: 60s
+
   rabbitmq:
     host: localhost
     username: guest
     password: guest
+
   mongodb:
     uri: mongodb://root:example@localhost:27017/crazy_chat?authSource=admin
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: YOUR_CLIENT_ID
+            client-secret: YOUR_CLIENT_SECRET
+            scope:
+              - openid
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
 
 s3:
   endpoint: http://localhost:9000
