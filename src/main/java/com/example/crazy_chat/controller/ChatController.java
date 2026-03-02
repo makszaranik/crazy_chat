@@ -7,9 +7,10 @@ import com.example.crazy_chat.domains.message.TextMessageEntity;
 import com.example.crazy_chat.domains.participant.ParticipantEntity;
 import com.example.crazy_chat.dto.chat.ChatResponse;
 import com.example.crazy_chat.dto.chat.CreateChatRequest;
+import com.example.crazy_chat.dto.message.input.FileMessageRequest;
+import com.example.crazy_chat.dto.message.output.FileMessageResponse;
 import com.example.crazy_chat.dto.message.output.MessageResponse;
 import com.example.crazy_chat.dto.message.input.TextMessageRequest;
-import com.example.crazy_chat.dto.message.output.FileMessageResponse;
 import com.example.crazy_chat.dto.message.output.TextMessageResponse;
 import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
 import com.example.crazy_chat.dto.participant.output.ParticipantResponse;
@@ -71,6 +72,7 @@ public class ChatController {
                 .build())
             .toList();
     }
+
 
     @BatchMapping(typeName = "Chat", field = "messages")
     public Map<ChatResponse, List<MessageResponse>> batchMessages(List<ChatResponse> chats){
@@ -150,6 +152,34 @@ public class ChatController {
             .build();
     }
 
+
+    @MutationMapping
+    public FileMessageResponse sendFileMessage(@Valid @Argument FileMessageRequest message){
+        FileMessageEntity messageEntity = FileMessageEntity.builder().
+            chatId(message.chatId())
+            .senderId(participantService.getCurrentParticipant().getId())
+            .s3FileId(message.fileId())
+            .build();
+
+        FileMessageEntity savedMessage = messageService.saveMessage(messageEntity);
+        chatService.addMessageToChat(message.chatId(), savedMessage);
+
+        rabbitTemplate.convertAndSend(
+            EventService.MESSAGE_EXCHANGE,
+            EventService.MESSAGE_QUEUE,
+            savedMessage
+        );
+
+        log.debug("sent message: {}", savedMessage);
+
+        return FileMessageResponse.builder()
+            .id(savedMessage.getId())
+            .chatId(savedMessage.getChatId())
+            .senderId(savedMessage.getSenderId())
+            .fileId(savedMessage.getS3FileId())
+            .build();
+
+    }
 
     @MutationMapping
     public Boolean chatParticipantAction(@Valid @Argument ParticipantChatEventResponse chatEvent) {

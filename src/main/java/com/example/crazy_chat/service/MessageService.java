@@ -27,6 +27,10 @@ public class MessageService {
         return messageRepository.save(messageEntity);
     }
 
+    public FileMessageEntity saveMessage(FileMessageEntity messageEntity) {
+        return messageRepository.save(messageEntity);
+    }
+
     public Flux<MessageEntity> fetchEvents() {
         return messageBuffer.asFlux();
     }

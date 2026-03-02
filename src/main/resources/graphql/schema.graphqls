@@ -77,6 +77,7 @@ input InitMultipartUploadRequest {
 }
 
 type MultipartUploadResponse {
+    fileId: String!
     uploadId: String!,
     parts: Long!
     urls: [String!]!
@@ -101,7 +102,7 @@ type Query {
 
 type Mutation {
     initiateUpload(request: InitMultipartUploadRequest!): MultipartUploadResponse!
-    completeUpload(request: CompleteMultipartRequest!): ???
+    completeUpload(request: CompleteMultipartRequest!): Boolean!
     createChat(chat: CreateChatInput!): Chat!
     sendTextMessage(message: SendTextMessageInput!): TextMessage!
     sendFileMessage(message: SendFileMessageInput!): FileMessage!

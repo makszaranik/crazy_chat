@@ -36,9 +36,10 @@ public class S3FileController {
 
 
     @MutationMapping
-    public void completeUpload(@Valid @Argument CompleteMultipartRequest request) {
+    public Boolean completeUpload(@Valid @Argument CompleteMultipartRequest request) {
         FileMetadataEntity metadataEntity = fileMetadataService.findMetadataEntityById(request.fileId());
         s3FileService.completeUpload(metadataEntity, request);
+        return true;
     }
 
 
