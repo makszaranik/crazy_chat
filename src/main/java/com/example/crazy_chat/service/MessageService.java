@@ -13,6 +13,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,4 +57,23 @@ public class MessageService {
         return messages.stream().map(this::toMessageResponse).toList();
     }
 
+    public List<MessageEntity> fetchMessages(String chatId) {
+        return messageRepository.findAllByChatId(chatId);
+    }
+
+    public List<MessageResponse> fetchMessagesToMessageResponse(String chatId) {
+        return fetchMessages(chatId).stream()
+            .map(this::toMessageResponse)
+            .toList();
+    }
+
+    public Map<String, List<MessageResponse>> fetchMessagesByChatIds(List<String> chatIds) {
+        List<MessageEntity> messages = messageRepository.findByChatIdIn(chatIds);
+        return messages.stream().collect(
+            Collectors.groupingBy(
+                MessageEntity::getChatId,
+                Collectors.mapping(this::toMessageResponse, Collectors.toList())
+            )
+        );
+    }
 }

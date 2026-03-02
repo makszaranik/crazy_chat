@@ -3,6 +3,7 @@ package com.example.crazy_chat.service;
 import com.example.crazy_chat.domains.chat.ChatEntity;
 import com.example.crazy_chat.domains.message.MessageEntity;
 import com.example.crazy_chat.domains.participant.ParticipantEntity;
+import com.example.crazy_chat.dto.chat.ChatResponse;
 import com.example.crazy_chat.exceptions.ChatNotFoundException;
 import com.example.crazy_chat.exceptions.ParticipantNotInChatException;
 import com.example.crazy_chat.repository.ChatRepository;
@@ -19,6 +20,7 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final ParticipantService participantService;
+    private final MessageService messageService;
 
     public ChatEntity createChat(ChatEntity chatEntity) {
         return chatRepository.save(chatEntity);
@@ -42,7 +44,7 @@ public class ChatService {
     }
 
     public List<MessageEntity> getMessages(String chatId) {
-        return messageRepository.findByChatId(chatId);
+        return messageRepository.findAllByChatId(chatId);
     }
 
     public void addParticipantToChat(String chatId, String participantId) {
@@ -64,5 +66,20 @@ public class ChatService {
     public boolean isParticipantInChat(String chatId, String participantId) {
         ChatEntity chat = findChatById(chatId);
         return chat.getParticipants().stream().anyMatch(p -> p.getId().equals(participantId));
+    }
+
+    public List<ChatEntity> fetchAllChats() {
+        return chatRepository.findAll();
+    }
+
+
+    public ChatResponse toChatResponse(ChatEntity chatEntity) {
+        return ChatResponse.builder()
+            .id(chatEntity.getId())
+            .name(chatEntity.getName())
+            .type(chatEntity.getType())
+            .participants(participantService.toParticipantResponse(chatEntity.getParticipants()))
+            .messages(messageService.fetchMessagesToMessageResponse(chatEntity.getId()))
+            .build();
     }
 }

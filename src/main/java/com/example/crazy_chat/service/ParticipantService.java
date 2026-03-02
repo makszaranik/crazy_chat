@@ -10,6 +10,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,10 @@ public class ParticipantService {
             .orElseThrow(() -> new IllegalStateException("Participant with id " + participantId + " not found"));
     }
 
+    public List<ParticipantEntity> fetchParticipantsByIds(List<String> participantIds) {
+        return participantRepository.findAllByIdIn(participantIds);
+    }
+
     public ParticipantResponse toParticipantResponse(ParticipantEntity participant) {
         return ParticipantResponse.builder()
             .id(participant.getId())
@@ -44,6 +50,15 @@ public class ParticipantService {
 
     public List<ParticipantResponse> toParticipantResponse(List<ParticipantEntity> participants) {
         return participants.stream().map(this::toParticipantResponse).toList();
+    }
+
+    public Map<String, List<ParticipantResponse>> fetchParticipantsByChatIds(List<String> participantIds) {
+        List<ParticipantEntity> participants = participantRepository.findAllByIdIn(participantIds);
+        return participants.stream()
+            .collect(Collectors.groupingBy(
+                ParticipantEntity::getId,
+                Collectors.mapping(this::toParticipantResponse, Collectors.toList())
+            ));
     }
 
 }

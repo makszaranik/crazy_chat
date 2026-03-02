@@ -5,7 +5,7 @@ type Chat {
     name: String
     type: ChatType!
     messages: [Message!]
-    participant: [Participant!]
+    participants: [Participant!]
 }
 
 enum ChatType {
@@ -95,6 +95,7 @@ input CompletedParts {
 
 type Query {
     chat(id: ID!): Chat
+    chats: [Chat!]!
     getDownloadLink(fileId: String!): String!
 }
 

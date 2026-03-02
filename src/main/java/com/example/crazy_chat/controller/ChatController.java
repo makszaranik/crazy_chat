@@ -12,6 +12,7 @@ import com.example.crazy_chat.dto.message.input.TextMessageRequest;
 import com.example.crazy_chat.dto.message.output.FileMessageResponse;
 import com.example.crazy_chat.dto.message.output.TextMessageResponse;
 import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
+import com.example.crazy_chat.dto.participant.output.ParticipantResponse;
 import com.example.crazy_chat.service.ChatService;
 import com.example.crazy_chat.service.EventService;
 import com.example.crazy_chat.service.MessageService;
@@ -20,15 +21,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
+import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -58,6 +59,48 @@ public class ChatController {
             .build();
     }
 
+    @QueryMapping
+    public List<ChatResponse> chats() {
+        return chatService.fetchAllChats().stream()
+            .map(chat -> ChatResponse.builder()
+                .id(chat.getId())
+                .name(chat.getName())
+                .type(chat.getType())
+                .messages(new ArrayList<>())
+                .participants(new ArrayList<>())
+                .build())
+            .toList();
+    }
+
+    @BatchMapping(typeName = "Chat", field = "messages")
+    public Map<ChatResponse, List<MessageResponse>> batchMessages(List<ChatResponse> chats){
+        List<String> chatIds = chats.stream().map(ChatResponse::id).toList();
+
+        Map<String, List<MessageResponse>> messagesByChatIds = messageService.fetchMessagesByChatIds(chatIds);
+
+        return chats.stream()
+            .collect(Collectors.toMap(
+                chat -> chat,
+                chat -> messagesByChatIds.getOrDefault(chat.id(), List.of())
+            ));
+    }
+
+
+    @BatchMapping(typeName = "Chat", field = "participants")
+    public Map<ChatResponse, List<ParticipantResponse>> batchParticipants(List<ChatResponse> chats){
+        List<String> participantIds = chats.stream()
+            .flatMap(chat -> chat.participants().stream().map(ParticipantResponse::id))
+            .toList();
+
+        Map<String, List<ParticipantResponse>> participantsByChatIds = participantService.fetchParticipantsByChatIds(participantIds);
+
+        return chats.stream()
+            .collect(Collectors.toMap(
+                chat -> chat,
+                chat -> participantsByChatIds.getOrDefault(chat.id(), List.of())
+            ));
+    }
+
 
     @MutationMapping
     public ChatResponse createChat(@Valid @Argument CreateChatRequest chat) {
@@ -70,7 +113,6 @@ public class ChatController {
         ChatEntity createdChat = chatService.createChat(chatEntity);
         log.debug("chat created: {}", chat);
 
-
         return ChatResponse.builder()
             .id(createdChat.getId())
             .name(createdChat.getName())
@@ -79,6 +121,7 @@ public class ChatController {
             .participants(new ArrayList<>())
             .build();
     }
+
 
     @MutationMapping
     public TextMessageResponse sendTextMessage(@Valid @Argument TextMessageRequest message) {
@@ -129,21 +172,7 @@ public class ChatController {
     public Flux<MessageResponse> messageSendEvent(@Argument String chatId) {
         return messageService.fetchEvents()
             .filter(event -> event.getChatId().equals(chatId))
-            .map(event -> switch (event) {
-                case TextMessageEntity message -> TextMessageResponse.builder()
-                    .id(message.getId())
-                    .chatId(message.getChatId())
-                    .content(message.getContent())
-                    .senderId(message.getSenderId())
-                    .build();
-
-                case FileMessageEntity message -> FileMessageResponse.builder()
-                    .id(message.getId())
-                    .chatId(message.getChatId())
-                    .senderId(message.getSenderId())
-                    .fileId(message.getS3FileId())
-                    .build();
-            });
+            .map(messageService::toMessageResponse);
     }
 
 
