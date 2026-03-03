@@ -71,7 +71,6 @@ public class ChatController {
     @BatchMapping(typeName = "Chat", field = "messages")
     public Map<ChatResponse, List<MessageResponse>> batchMessages(List<ChatResponse> chats){
         List<String> chatIds = chats.stream().map(ChatResponse::id).toList();
-
         Map<String, List<MessageResponse>> messagesByChatIds = messageService.fetchMessagesByChatIds(chatIds);
 
         return chats.stream()

@@ -11,6 +11,7 @@ import com.example.crazy_chat.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,13 +32,20 @@ public class ChatService {
             .orElseThrow(() -> new ChatNotFoundException(id));
     }
 
+    public List<ChatResponse> fetchAllChatsResponses() {
+        return chatRepository.findAll().stream()
+            .map(chat -> ChatResponse.builder()
+                .id(chat.getId())
+                .name(chat.getName())
+                .type(chat.getType())
+                .messages(new ArrayList<>())
+                .participants(new ArrayList<>())
+                .build())
+            .toList();
+    }
+
     public void addMessageToChat(String chatId, MessageEntity message) {
         String participantId = participantService.getCurrentParticipant().getId();
-
-        if (!isParticipantInChat(chatId, participantId)) {
-            throw new ParticipantNotInChatException(participantId);
-        }
-
         message.setChatId(chatId);
         message.setSenderId(participantId);
         messageRepository.save(message);
