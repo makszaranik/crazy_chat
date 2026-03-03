@@ -1,14 +1,20 @@
 package com.example.crazy_chat.service;
 
 import com.example.crazy_chat.domains.message.MessageEntity;
+import com.example.crazy_chat.domains.message.outboxEvent.OutBoxEventEntity;
 import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
+import com.example.crazy_chat.repository.OutBoxEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -23,7 +29,8 @@ public class EventService {
 
     private final MessageService messageService;
     private final ParticipantService participantService;
-
+    private final RabbitTemplate rabbitTemplate;
+    private final OutBoxEventRepository eventRepository;
 
     @RabbitListener(
         bindings = @QueueBinding(
@@ -50,5 +57,26 @@ public class EventService {
         participantService.publishEvent(event);
     }
 
+    @Scheduled(fixedRate = 2000)
+    public void publishEvent() {
+        List<OutBoxEventEntity> withStatusCreated = messageService.getAllWithStatusCreated();
+        for (OutBoxEventEntity event : withStatusCreated) {
+            try {
+                MessageEntity messageEntity = messageService.fetchMessageById(event.getId());
+
+                rabbitTemplate.convertAndSend(
+                    EventService.MESSAGE_EXCHANGE,
+                    EventService.MESSAGE_QUEUE,
+                    messageEntity
+                );
+
+                event.setStatus(OutBoxEventEntity.AggregateType.DELIVERED);
+                eventRepository.save(event);
+
+            } catch (Exception exception) {
+                log.error("outbox publishing error");
+            }
+        }
+    }
 
 }

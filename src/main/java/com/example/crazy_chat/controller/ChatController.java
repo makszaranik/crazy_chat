@@ -128,16 +128,8 @@ public class ChatController {
             .content(message.content())
             .build();
 
-        TextMessageEntity savedMessage = messageService.saveMessage(messageEntity);
+        TextMessageEntity savedMessage = (TextMessageEntity) messageService.saveMessageWithOutbox(messageEntity);
         chatService.addMessageToChat(message.chatId(), savedMessage);
-
-        rabbitTemplate.convertAndSend(
-            EventService.MESSAGE_EXCHANGE,
-            EventService.MESSAGE_QUEUE,
-            savedMessage
-        );
-
-        log.debug("sent message: {}", savedMessage);
 
         return TextMessageResponse.builder()
             .id(savedMessage.getId())
@@ -157,16 +149,8 @@ public class ChatController {
             .s3FileId(message.fileId())
             .build();
 
-        FileMessageEntity savedMessage = messageService.saveMessage(messageEntity);
+        FileMessageEntity savedMessage = (FileMessageEntity) messageService.saveMessageWithOutbox(messageEntity);
         chatService.addMessageToChat(message.chatId(), savedMessage);
-
-        rabbitTemplate.convertAndSend(
-            EventService.MESSAGE_EXCHANGE,
-            EventService.MESSAGE_QUEUE,
-            savedMessage
-        );
-
-        log.debug("sent message: {}", savedMessage);
 
         return FileMessageResponse.builder()
             .id(savedMessage.getId())
