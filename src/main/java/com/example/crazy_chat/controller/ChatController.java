@@ -187,6 +187,7 @@ public class ChatController {
     }
 
     @MutationMapping
+    @PreAuthorize("isAuthenticated()")
     public Boolean chatParticipantAction(@Valid @Argument ParticipantChatEventResponse chatEvent) {
         switch (chatEvent.event()) {
             case JOIN -> chatService.addParticipantToChat(chatEvent.chatId(), chatEvent.participantId());
