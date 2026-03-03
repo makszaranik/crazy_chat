@@ -64,15 +64,7 @@ public class ChatController {
     @QueryMapping
     @PreAuthorize("isAuthenticated()")
     public List<ChatResponse> chats() {
-        return chatService.fetchAllChats().stream()
-            .map(chat -> ChatResponse.builder()
-                .id(chat.getId())
-                .name(chat.getName())
-                .type(chat.getType())
-                .messages(new ArrayList<>())
-                .participants(new ArrayList<>())
-                .build())
-            .toList();
+        return chatService.fetchAllChatsResponses();
     }
 
 
