@@ -30,6 +30,7 @@ import reactor.core.publisher.Flux;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -56,15 +57,19 @@ public class ChatController {
             .id(chat.getId())
             .name(chat.getName())
             .type(chat.getType())
-            .messages(messageService.toMessageResponse(messages))
-            .participants(participantService.toParticipantResponse(participants))
             .build();
     }
 
     @QueryMapping
     @PreAuthorize("isAuthenticated()")
     public List<ChatResponse> chats() {
-        return chatService.fetchAllChatsResponses();
+        return chatService.fetchAllChats().stream()
+            .map(chat -> ChatResponse.builder()
+                .id(chat.getId())
+                .name(chat.getName())
+                .type(chat.getType())
+                .build())
+            .toList();
     }
 
 
@@ -75,7 +80,7 @@ public class ChatController {
 
         return chats.stream()
             .collect(Collectors.toMap(
-                chat -> chat,
+                Function.identity(),
                 chat -> messagesByChatIds.getOrDefault(chat.id(), List.of())
             ));
     }
@@ -83,17 +88,14 @@ public class ChatController {
 
     @BatchMapping(typeName = "Chat", field = "participants")
     public Map<ChatResponse, List<ParticipantResponse>> batchParticipants(List<ChatResponse> chats){
-        List<String> participantIds = chats.stream()
-            .flatMap(chat -> chat.participants().stream().map(ParticipantResponse::id))
-            .toList();
-
-        Map<String, List<ParticipantResponse>> participantsByChatIds = participantService.fetchParticipantsByChatIds(participantIds);
+        List<String> chatIds = chats.stream().map(ChatResponse::id).toList();
+        Map<String, List<ParticipantResponse>> participantsByChatIds = participantService.fetchParticipantsByChatIds(chatIds);
 
         return chats.stream()
             .collect(Collectors.toMap(
-                chat -> chat,
-                chat -> participantsByChatIds.getOrDefault(chat.id(), List.of())
-            ));
+                Function.identity(),
+                chat -> participantsByChatIds.getOrDefault(chat.id(), List.of()))
+            );
     }
 
 
@@ -113,8 +115,6 @@ public class ChatController {
             .id(createdChat.getId())
             .name(createdChat.getName())
             .type(createdChat.getType())
-            .messages(new ArrayList<>())
-            .participants(new ArrayList<>())
             .build();
     }
 
@@ -160,6 +160,7 @@ public class ChatController {
             .build();
 
     }
+
 
     @MutationMapping
     @PreAuthorize("isAuthenticated()")

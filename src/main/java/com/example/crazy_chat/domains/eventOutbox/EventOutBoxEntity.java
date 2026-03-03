@@ -1,4 +1,4 @@
-package com.example.crazy_chat.domains.message.outboxEvent;
+package com.example.crazy_chat.domains.eventOutbox;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Document("outbox")
 @AllArgsConstructor
 @NoArgsConstructor
-public class OutBoxEventEntity {
+public class EventOutBoxEntity {
 
     @Id
     private String id;

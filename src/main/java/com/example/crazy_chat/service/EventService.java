@@ -1,9 +1,9 @@
 package com.example.crazy_chat.service;
 
 import com.example.crazy_chat.domains.message.MessageEntity;
-import com.example.crazy_chat.domains.message.outboxEvent.OutBoxEventEntity;
+import com.example.crazy_chat.domains.eventOutbox.EventOutBoxEntity;
 import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
-import com.example.crazy_chat.repository.OutBoxEventRepository;
+import com.example.crazy_chat.repository.EventOutboxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -30,7 +30,7 @@ public class EventService {
     private final MessageService messageService;
     private final ParticipantService participantService;
     private final RabbitTemplate rabbitTemplate;
-    private final OutBoxEventRepository eventRepository;
+    private final EventOutboxRepository eventRepository;
 
     @RabbitListener(
         bindings = @QueueBinding(
@@ -59,8 +59,7 @@ public class EventService {
 
     @Scheduled(fixedRate = 2000)
     public void publishEvent() {
-        List<OutBoxEventEntity> withStatusCreated = messageService.getAllWithStatusCreated();
-        for (OutBoxEventEntity event : withStatusCreated) {
+        messageService.getAllWithStatusCreated().forEach(event -> {
             try {
                 MessageEntity messageEntity = messageService.fetchMessageById(event.getId());
 
@@ -70,13 +69,13 @@ public class EventService {
                     messageEntity
                 );
 
-                event.setStatus(OutBoxEventEntity.AggregateType.DELIVERED);
+                event.setStatus(EventOutBoxEntity.AggregateType.DELIVERED);
                 eventRepository.save(event);
 
-            } catch (Exception exception) {
-                log.error("outbox publishing error");
+            } catch (Exception e) {
+                log.error("Outbox publishing error for event id {}: {}", event.getId(), e.getMessage(), e);
             }
-        }
+        });
     }
 
 }

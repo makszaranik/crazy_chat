@@ -3,12 +3,12 @@ package com.example.crazy_chat.service;
 import com.example.crazy_chat.domains.message.FileMessageEntity;
 import com.example.crazy_chat.domains.message.MessageEntity;
 import com.example.crazy_chat.domains.message.TextMessageEntity;
-import com.example.crazy_chat.domains.message.outboxEvent.OutBoxEventEntity;
+import com.example.crazy_chat.domains.eventOutbox.EventOutBoxEntity;
 import com.example.crazy_chat.dto.message.output.MessageResponse;
 import com.example.crazy_chat.dto.message.output.FileMessageResponse;
 import com.example.crazy_chat.dto.message.output.TextMessageResponse;
 import com.example.crazy_chat.repository.MessageRepository;
-import com.example.crazy_chat.repository.OutBoxEventRepository;
+import com.example.crazy_chat.repository.EventOutboxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,15 +27,11 @@ import java.util.stream.Collectors;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-    private final OutBoxEventRepository outBoxEventRepository;
+    private final EventOutboxRepository eventOutboxRepository;
     private final Sinks.Many<MessageEntity> messageBuffer = Sinks.many().multicast().directBestEffort();
 
-
     public MessageEntity saveMessage(MessageEntity messageEntity) {
-        return switch (messageEntity) {
-            case TextMessageEntity textMessage -> messageRepository.save(textMessage);
-            case FileMessageEntity fileMessage -> messageRepository.save(fileMessage);
-        };
+        return messageRepository.save(messageEntity);
     }
 
     public Flux<MessageEntity> fetchEvents() {
@@ -96,17 +92,17 @@ public class MessageService {
     public MessageEntity saveMessageWithOutbox(MessageEntity messageEntity) {
         MessageEntity savedMessage = saveMessage(messageEntity);
 
-        OutBoxEventEntity outBoxEvent = OutBoxEventEntity.builder()
+        EventOutBoxEntity outBoxEvent = EventOutBoxEntity.builder()
             .messageId(messageEntity.getId())
-            .status(OutBoxEventEntity.AggregateType.CREATED)
+            .status(EventOutBoxEntity.AggregateType.CREATED)
             .build();
 
-        outBoxEventRepository.save(outBoxEvent);
+        eventOutboxRepository.save(outBoxEvent);
         return savedMessage;
     }
 
 
-    public List<OutBoxEventEntity> getAllWithStatusCreated() {
-        outBoxEventRepository.findOutBoxEventEntitiesByStatus(OutBoxEventEntity.AggregateType.CREATED);
+    public List<EventOutBoxEntity> getAllWithStatusCreated() {
+        return eventOutboxRepository.findOutBoxEventEntitiesByStatus(EventOutBoxEntity.AggregateType.CREATED);
     }
 }

@@ -8,12 +8,16 @@ import com.example.crazy_chat.service.FileMetadataService;
 import com.example.crazy_chat.service.S3FileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Controller
@@ -50,6 +54,18 @@ public class S3FileController {
     @PreAuthorize("isAuthenticated()")
     public String getDownloadLink(@Argument String fileId) {
         return s3FileService.getDownloadLink(fileId);
+    }
+
+
+    @SneakyThrows
+    @PostMapping("file/upload")
+    public void uploadFile(@RequestParam("file") MultipartFile file) {
+        FileMetadataEntity metadataEntity = FileMetadataEntity.builder()
+            .contentLength(file.getBytes().length)
+            .contentType(file.getContentType())
+            .build();
+
+        s3FileService.uploadFile(metadataEntity, file);
     }
 
 }
