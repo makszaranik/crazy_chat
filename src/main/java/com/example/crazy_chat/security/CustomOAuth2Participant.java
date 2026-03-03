@@ -31,4 +31,8 @@ public class CustomOAuth2Participant implements OAuth2User {
     public String getName() {
         return participant.getUsername();
     }
+
+    public String getId() {
+        return participant.getId();
+    }
 }
