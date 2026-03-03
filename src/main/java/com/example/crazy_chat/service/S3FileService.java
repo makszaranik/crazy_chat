@@ -29,7 +29,6 @@ public class S3FileService {
     private final S3Presigner s3Presigner;
     private final S3ClientConfig.S3PropertiesHolder s3PropertiesHolder;
 
-
     public MultipartUploadResponse initiateUpload(FileMetadataEntity fileMetadata, InitMultipartUploadRequest multipartUploadRequest) {
         CreateMultipartUploadRequest uploadRequest = CreateMultipartUploadRequest.builder()
             .bucket(s3PropertiesHolder.bucket())
