@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.graphql.data.method.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 
@@ -46,7 +45,7 @@ public class ChatController {
 
 
     @QueryMapping
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     public ChatResponse chat(@Argument String id) {
         ChatEntity chat = chatService.findChatById(id);
 
@@ -61,7 +60,7 @@ public class ChatController {
     }
 
     @QueryMapping
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     public List<ChatResponse> chats() {
         return chatService.fetchAllChats().stream()
             .map(chat -> ChatResponse.builder()
@@ -100,7 +99,7 @@ public class ChatController {
 
 
     @MutationMapping
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     public ChatResponse createChat(@Valid @Argument CreateChatRequest chat) {
         ChatEntity chatEntity = ChatEntity.builder()
             .type(chat.type())
@@ -120,7 +119,7 @@ public class ChatController {
 
 
     @MutationMapping
-    @PreAuthorize("@chatSecurityService.participantInChat(#message.chatId(), authentication)")
+    //@PreAuthorize("@chatSecurityService.participantInChat(#message.chatId(), authentication)")
     public TextMessageResponse sendTextMessage(@Valid @Argument TextMessageRequest message) {
         TextMessageEntity messageEntity = TextMessageEntity.builder()
             .chatId(message.chatId())
@@ -128,7 +127,7 @@ public class ChatController {
             .content(message.content())
             .build();
 
-        TextMessageEntity savedMessage = (TextMessageEntity) messageService.saveMessageWithOutbox(messageEntity);
+        TextMessageEntity savedMessage = (TextMessageEntity) messageService.sendMessageWithOutbox(messageEntity);
         chatService.addMessageToChat(message.chatId(), savedMessage);
 
         return TextMessageResponse.builder()
@@ -141,7 +140,7 @@ public class ChatController {
 
 
     @MutationMapping
-    @PreAuthorize("@chatSecurityService.participantInChat(#message.chatId(), authentication)")
+    //@PreAuthorize("@chatSecurityService.participantInChat(#message.chatId(), authentication)")
     public FileMessageResponse sendFileMessage(@Valid @Argument FileMessageRequest message){
         FileMessageEntity messageEntity = FileMessageEntity.builder().
             chatId(message.chatId())
@@ -149,7 +148,7 @@ public class ChatController {
             .s3FileId(message.fileId())
             .build();
 
-        FileMessageEntity savedMessage = (FileMessageEntity) messageService.saveMessageWithOutbox(messageEntity);
+        FileMessageEntity savedMessage = (FileMessageEntity) messageService.sendMessageWithOutbox(messageEntity);
         chatService.addMessageToChat(message.chatId(), savedMessage);
 
         return FileMessageResponse.builder()
@@ -163,7 +162,7 @@ public class ChatController {
 
 
     @MutationMapping
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     public Boolean chatParticipantAction(@Valid @Argument ParticipantChatEventResponse chatEvent) {
         switch (chatEvent.event()) {
             case JOIN -> chatService.addParticipantToChat(chatEvent.chatId(), chatEvent.participantId());
@@ -181,7 +180,7 @@ public class ChatController {
 
 
     @SubscriptionMapping
-    @PreAuthorize("@chatSecurityService.participantInChat(#chatId, authentication)")
+    //@PreAuthorize("@chatSecurityService.participantInChat(#chatId, authentication)")
     public Flux<MessageResponse> messageSendEvent(@Argument String chatId) {
         return messageService.fetchEvents()
             .filter(event -> event.getChatId().equals(chatId))
@@ -190,7 +189,7 @@ public class ChatController {
 
 
     @SubscriptionMapping
-    @PreAuthorize("@chatSecurityService.participantInChat(#chatId, authentication)")
+    //@PreAuthorize("@chatSecurityService.participantInChat(#chatId, authentication)")
     public Flux<ParticipantChatEventResponse> chatParticipantEvent(@Argument String chatId) {
         return participantService.fetchEvents().filter(event -> event.chatId().equals(chatId));
     }

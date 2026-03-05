@@ -12,14 +12,14 @@ services:
       - crazy_chat_rabbitmq_data:/var/lib/rabbitmq
 
   mongo:
-    image: mongo:7.0
+    image: mongo
     container_name: mongo
     ports:
       - 27017:27017
     command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     healthcheck:
       test: >
-        bash -c "echo 'try { rs.status() } catch (err) { rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"mongo:27017\"}]}) }' | mongosh --port 27017 --quiet"
+        bash -c "echo 'try { rs.status() } catch (err) { rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"localhost:27017\"}]}) }' | mongosh --port 27017 --quiet"
       interval: 5s
       timeout: 30s
       start_period: 5s

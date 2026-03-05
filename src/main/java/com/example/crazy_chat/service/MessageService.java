@@ -89,7 +89,7 @@ public class MessageService {
     }
 
     @Transactional
-    public MessageEntity saveMessageWithOutbox(MessageEntity messageEntity) {
+    public MessageEntity sendMessageWithOutbox(MessageEntity messageEntity) {
         MessageEntity savedMessage = saveMessage(messageEntity);
 
         EventOutBoxEntity outBoxEvent = EventOutBoxEntity.builder()

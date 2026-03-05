@@ -61,7 +61,7 @@ public class EventService {
     public void publishEvent() {
         messageService.getAllWithStatusCreated().forEach(event -> {
             try {
-                MessageEntity messageEntity = messageService.fetchMessageById(event.getId());
+                MessageEntity messageEntity = messageService.fetchMessageById(event.getMessageId());
 
                 rabbitTemplate.convertAndSend(
                     EventService.MESSAGE_EXCHANGE,

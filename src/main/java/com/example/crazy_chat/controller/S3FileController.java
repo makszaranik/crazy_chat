@@ -12,7 +12,6 @@ import lombok.SneakyThrows;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +28,7 @@ public class S3FileController {
 
 
     @MutationMapping
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     public MultipartUploadResponse initiateUpload(@Valid @Argument InitMultipartUploadRequest request) {
         FileMetadataEntity metadataEntity = FileMetadataEntity.builder()
             .contentLength(request.fileSize())
@@ -42,7 +41,7 @@ public class S3FileController {
 
 
     @MutationMapping
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     public Boolean completeUpload(@Valid @Argument CompleteMultipartRequest request) {
         FileMetadataEntity metadataEntity = fileMetadataService.findMetadataEntityById(request.fileId());
         s3FileService.completeUpload(metadataEntity, request);
@@ -51,7 +50,7 @@ public class S3FileController {
 
 
     @QueryMapping
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     public String getDownloadLink(@Argument String fileId) {
         return s3FileService.getDownloadLink(fileId);
     }
