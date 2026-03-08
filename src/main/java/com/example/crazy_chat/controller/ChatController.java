@@ -28,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -49,9 +50,6 @@ public class ChatController {
     //@PreAuthorize("isAuthenticated()")
     public ChatResponse chat(@Argument String id) {
         ChatEntity chat = chatService.findChatById(id);
-
-        List<MessageEntity> messages = chatService.getMessages(chat.getId());
-        List<ParticipantEntity> participants = chat.getParticipants();
 
         return ChatResponse.builder()
             .id(chat.getId())
@@ -105,7 +103,7 @@ public class ChatController {
         ChatEntity chatEntity = ChatEntity.builder()
             .type(chat.type())
             .name(chat.name())
-            .participants(new ArrayList<>())
+            .participants(new HashSet<>())
             .build();
 
         ChatEntity createdChat = chatService.createChat(chatEntity);
