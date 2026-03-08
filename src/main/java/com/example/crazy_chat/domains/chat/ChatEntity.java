@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -25,7 +26,7 @@ public class ChatEntity {
     private String id;
     private String name;
     private ChatType type;
-    private List<ParticipantEntity> participants;
+    private Set<ParticipantEntity> participants;
 
     @CreatedDate
     private LocalDateTime createdAt;

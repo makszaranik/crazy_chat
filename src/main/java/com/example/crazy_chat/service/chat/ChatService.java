@@ -3,7 +3,6 @@ package com.example.crazy_chat.service.chat;
 import com.example.crazy_chat.domains.chat.ChatEntity;
 import com.example.crazy_chat.domains.message.MessageEntity;
 import com.example.crazy_chat.domains.participant.ParticipantEntity;
-import com.example.crazy_chat.dto.chat.ChatResponse;
 import com.example.crazy_chat.exceptions.ChatNotFoundException;
 import com.example.crazy_chat.repository.ChatRepository;
 import com.example.crazy_chat.repository.MessageRepository;
@@ -45,14 +44,10 @@ public class ChatService {
 
     public void addParticipantToChat(String chatId, String participantId) {
         ChatEntity chat = findChatById(chatId);
-        boolean exists = chat.getParticipants().stream().anyMatch(p -> p.getId().equals(participantId));
-        if (!exists) {
-            ParticipantEntity participant = participantService.fetchParticipantById(participantId);
-            chat.getParticipants().add(participant);
-            chatRepository.save(chat);
-        }
+        ParticipantEntity participant = participantService.fetchParticipantById(participantId);
+        chat.getParticipants().add(participant);
+        chatRepository.save(chat);
     }
-
     public void removeParticipantFromChat(String chatId, String participantId) {
         ChatEntity chat = findChatById(chatId);
         chat.getParticipants().removeIf(p -> p.getId().equals(participantId));
