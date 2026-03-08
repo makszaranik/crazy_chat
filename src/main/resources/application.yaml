@@ -15,6 +15,22 @@ spring:
   mongodb:
     uri: mongodb://localhost:27017/crazy_chat?replicaSet=rs0
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 818739186149-glgklq3v0ftevep7v6mpbs8mb4sgh7gl.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - openid
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
 s3:
   endpoint: http://localhost:9000
   access-key: minioadmin

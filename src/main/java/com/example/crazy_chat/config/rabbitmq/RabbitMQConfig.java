@@ -1,4 +1,4 @@
-package com.example.crazy_chat.config;
+package com.example.crazy_chat.config.rabbitmq;
 
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

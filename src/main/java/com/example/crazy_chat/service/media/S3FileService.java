@@ -1,6 +1,6 @@
 package com.example.crazy_chat.service.media;
 
-import com.example.crazy_chat.config.S3ClientConfig;
+import com.example.crazy_chat.config.s3client.S3ClientConfig;
 import com.example.crazy_chat.domains.media.FileMetadataEntity;
 import com.example.crazy_chat.dto.file.input.CompleteMultipartRequest;
 import com.example.crazy_chat.dto.file.input.InitMultipartUploadRequest;

@@ -5,6 +5,7 @@ import com.example.crazy_chat.dto.participant.output.ParticipantChatEventRespons
 import com.example.crazy_chat.dto.participant.output.ParticipantResponse;
 import com.example.crazy_chat.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
@@ -23,7 +24,9 @@ public class ParticipantService {
     private final Sinks.Many<ParticipantChatEventResponse> events = Sinks.many().multicast().directBestEffort();
 
     public ParticipantEntity getCurrentParticipant() {
-        return ParticipantEntity.builder().username("max").id("12415124213412").build();
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        return participantRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Participant not found"));
     }
 
     public void publishEvent(ParticipantChatEventResponse eventDto) {
@@ -43,15 +46,17 @@ public class ParticipantService {
         return participantRepository.save(participant);
     }
 
-    public List<ParticipantResponse> toParticipantResponse(List<ParticipantEntity> participants) {
-        return participants.stream().map(participantMapperService::toParticipantResponse).toList();
-    }
 
     public Map<String, List<ParticipantResponse>> fetchParticipantsByChatIds(List<String> participantIds) {
         List<ParticipantEntity> participants = participantRepository.findAllByIdIn(participantIds);
         return participants.stream()
-            .collect(Collectors.groupingBy(ParticipantEntity::getId,
-                Collectors.mapping(participantMapperService::toParticipantResponse, Collectors.toList())));
+            .collect(Collectors.groupingBy(
+                ParticipantEntity::getId,
+                Collectors.mapping(participantMapperService::toParticipantResponse, Collectors.toList()))
+            );
     }
 
+    public Optional<ParticipantEntity> fetchParticipantByUsername(String username) {
+        return participantRepository.findParticipantEntityByUsername(username);
+    }
 }

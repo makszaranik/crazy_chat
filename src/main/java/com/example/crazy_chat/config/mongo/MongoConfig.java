@@ -1,4 +1,4 @@
-package com.example.crazy_chat.config;
+package com.example.crazy_chat.config.mongo;
 
 import com.example.crazy_chat.domains.participant.ParticipantEntity;
 import com.example.crazy_chat.service.participant.ParticipantService;

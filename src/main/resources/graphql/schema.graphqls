@@ -55,7 +55,6 @@ input SendFileMessageInput {
 
 input ParticipantEventInput {
     chatId: ID!
-    participantId: ID!
     event: EventType!
 }
 

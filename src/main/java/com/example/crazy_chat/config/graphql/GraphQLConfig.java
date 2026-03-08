@@ -1,4 +1,4 @@
-package com.example.crazy_chat.config;
+package com.example.crazy_chat.config.graphql;
 
 import com.example.crazy_chat.dto.message.output.MessageResponse;
 import com.example.crazy_chat.dto.message.output.FileMessageResponse;
