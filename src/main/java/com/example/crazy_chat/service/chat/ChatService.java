@@ -48,6 +48,7 @@ public class ChatService {
         chat.getParticipants().add(participant);
         chatRepository.save(chat);
     }
+
     public void removeParticipantFromChat(String chatId, String participantId) {
         ChatEntity chat = findChatById(chatId);
         chat.getParticipants().removeIf(p -> p.getId().equals(participantId));
