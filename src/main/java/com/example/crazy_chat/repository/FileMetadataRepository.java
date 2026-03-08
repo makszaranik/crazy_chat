@@ -1,6 +1,6 @@
 package com.example.crazy_chat.repository;
 
-import com.example.crazy_chat.domains.file.FileMetadataEntity;
+import com.example.crazy_chat.domains.media.FileMetadataEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

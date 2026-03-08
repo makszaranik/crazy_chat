@@ -1,9 +1,10 @@
-package com.example.crazy_chat.service;
+package com.example.crazy_chat.service.message;
 
 import com.example.crazy_chat.domains.message.MessageEntity;
 import com.example.crazy_chat.domains.eventOutbox.EventOutBoxEntity;
 import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
 import com.example.crazy_chat.repository.EventOutboxRepository;
+import com.example.crazy_chat.service.participant.ParticipantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -13,8 +14,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -31,6 +30,7 @@ public class EventService {
     private final ParticipantService participantService;
     private final RabbitTemplate rabbitTemplate;
     private final EventOutboxRepository eventRepository;
+
 
     @RabbitListener(
         bindings = @QueueBinding(
@@ -57,7 +57,8 @@ public class EventService {
         participantService.publishEvent(event);
     }
 
-    @Scheduled(fixedRate = 2000)
+
+    @Scheduled(cron = "*/5 * * * * *")
     public void publishEvent() {
         messageService.getAllWithStatusCreated().forEach(event -> {
             try {

@@ -1,6 +1,6 @@
-package com.example.crazy_chat.service;
+package com.example.crazy_chat.service.media;
 
-import com.example.crazy_chat.domains.file.FileMetadataEntity;
+import com.example.crazy_chat.domains.media.FileMetadataEntity;
 import com.example.crazy_chat.exceptions.NoSuchMetadataEntity;
 import com.example.crazy_chat.repository.FileMetadataRepository;
 import lombok.RequiredArgsConstructor;

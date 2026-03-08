@@ -1,11 +1,11 @@
 package com.example.crazy_chat.controller;
 
-import com.example.crazy_chat.domains.file.FileMetadataEntity;
+import com.example.crazy_chat.domains.media.FileMetadataEntity;
 import com.example.crazy_chat.dto.file.input.CompleteMultipartRequest;
 import com.example.crazy_chat.dto.file.input.InitMultipartUploadRequest;
 import com.example.crazy_chat.dto.file.output.MultipartUploadResponse;
-import com.example.crazy_chat.service.FileMetadataService;
-import com.example.crazy_chat.service.S3FileService;
+import com.example.crazy_chat.service.media.FileMetadataService;
+import com.example.crazy_chat.service.media.S3FileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

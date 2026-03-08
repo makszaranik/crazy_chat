@@ -1,12 +1,8 @@
-package com.example.crazy_chat.service;
+package com.example.crazy_chat.service.message;
 
-import com.example.crazy_chat.domains.message.FileMessageEntity;
 import com.example.crazy_chat.domains.message.MessageEntity;
-import com.example.crazy_chat.domains.message.TextMessageEntity;
 import com.example.crazy_chat.domains.eventOutbox.EventOutBoxEntity;
 import com.example.crazy_chat.dto.message.output.MessageResponse;
-import com.example.crazy_chat.dto.message.output.FileMessageResponse;
-import com.example.crazy_chat.dto.message.output.TextMessageResponse;
 import com.example.crazy_chat.repository.MessageRepository;
 import com.example.crazy_chat.repository.EventOutboxRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +14,7 @@ import reactor.core.publisher.Sinks;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 
@@ -29,6 +26,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final EventOutboxRepository eventOutboxRepository;
     private final Sinks.Many<MessageEntity> messageBuffer = Sinks.many().multicast().directBestEffort();
+    private final MessageMapperService messageMapperService;
 
     public MessageEntity saveMessage(MessageEntity messageEntity) {
         return messageRepository.save(messageEntity);
@@ -42,39 +40,15 @@ public class MessageService {
         messageBuffer.tryEmitNext(message);
     }
 
-    public MessageResponse toMessageResponse(MessageEntity message) {
-        return switch (message) {
-            case TextMessageEntity textMessage -> TextMessageResponse.builder()
-                .id(textMessage.getId())
-                .chatId(textMessage.getChatId())
-                .senderId(textMessage.getSenderId())
-                .content(textMessage.getContent())
-                .build();
 
-            case FileMessageEntity textMessage -> FileMessageResponse.builder()
-                .id(textMessage.getId())
-                .chatId(textMessage.getChatId())
-                .senderId(textMessage.getSenderId())
-                .fileId(textMessage.getS3FileId())
-                .build();
-        };
+    public MessageEntity fetchMessageById(String id) {
+        return messageRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Message with id " + id + " not found"));
     }
 
-    public List<MessageResponse> toMessageResponse(List<MessageEntity> messages) {
-        return messages.stream().map(this::toMessageResponse).toList();
-    }
-
-    public List<MessageEntity> fetchMessages(String chatId) {
-        return messageRepository.findAllByChatId(chatId);
-    }
-
-    public MessageEntity fetchMessageById(String id){
-        return messageRepository.findById(id).orElseThrow(() -> new IllegalStateException("message not exist"));
-    }
-
-    public List<MessageResponse> fetchMessagesToMessageResponse(String chatId) {
-        return fetchMessages(chatId).stream()
-            .map(this::toMessageResponse)
+    public List<MessageResponse> fetchMessages(String chatId) {
+        return messageRepository.findAllByChatId(chatId).stream()
+            .map(messageMapperService::toMessageResponse)
             .toList();
     }
 
@@ -83,7 +57,7 @@ public class MessageService {
         return messages.stream().collect(
             Collectors.groupingBy(
                 MessageEntity::getChatId,
-                Collectors.mapping(this::toMessageResponse, Collectors.toList())
+                Collectors.mapping(messageMapperService::toMessageResponse, Collectors.toList())
             )
         );
     }

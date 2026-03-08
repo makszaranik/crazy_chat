@@ -1,4 +1,4 @@
-package com.example.crazy_chat.domains.file;
+package com.example.crazy_chat.domains.media;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,6 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.util.MimeType;
 
 import java.time.LocalDateTime;
 

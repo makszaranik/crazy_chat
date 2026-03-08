@@ -1,17 +1,17 @@
-package com.example.crazy_chat.service;
+package com.example.crazy_chat.service.chat;
 
 import com.example.crazy_chat.domains.chat.ChatEntity;
 import com.example.crazy_chat.domains.message.MessageEntity;
 import com.example.crazy_chat.domains.participant.ParticipantEntity;
 import com.example.crazy_chat.dto.chat.ChatResponse;
 import com.example.crazy_chat.exceptions.ChatNotFoundException;
-import com.example.crazy_chat.exceptions.ParticipantNotInChatException;
 import com.example.crazy_chat.repository.ChatRepository;
 import com.example.crazy_chat.repository.MessageRepository;
+import com.example.crazy_chat.service.participant.ParticipantService;
+import com.example.crazy_chat.service.message.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -68,14 +68,4 @@ public class ChatService {
         return chatRepository.findAll();
     }
 
-
-    public ChatResponse toChatResponse(ChatEntity chatEntity) {
-        return ChatResponse.builder()
-            .id(chatEntity.getId())
-            .name(chatEntity.getName())
-            .type(chatEntity.getType())
-            .participants(participantService.toParticipantResponse(chatEntity.getParticipants()))
-            .messages(messageService.fetchMessagesToMessageResponse(chatEntity.getId()))
-            .build();
-    }
 }

@@ -14,10 +14,11 @@ import com.example.crazy_chat.dto.message.input.TextMessageRequest;
 import com.example.crazy_chat.dto.message.output.TextMessageResponse;
 import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
 import com.example.crazy_chat.dto.participant.output.ParticipantResponse;
-import com.example.crazy_chat.service.ChatService;
-import com.example.crazy_chat.service.EventService;
-import com.example.crazy_chat.service.MessageService;
-import com.example.crazy_chat.service.ParticipantService;
+import com.example.crazy_chat.service.chat.ChatService;
+import com.example.crazy_chat.service.message.EventService;
+import com.example.crazy_chat.service.message.MessageMapperService;
+import com.example.crazy_chat.service.message.MessageService;
+import com.example.crazy_chat.service.participant.ParticipantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class ChatController {
     private final RabbitTemplate rabbitTemplate;
     private final MessageService messageService;
     private final ParticipantService participantService;
-
+    private final MessageMapperService messageMapperService;
 
     @QueryMapping
     //@PreAuthorize("isAuthenticated()")
@@ -184,7 +185,7 @@ public class ChatController {
     public Flux<MessageResponse> messageSendEvent(@Argument String chatId) {
         return messageService.fetchEvents()
             .filter(event -> event.getChatId().equals(chatId))
-            .map(messageService::toMessageResponse);
+            .map(messageMapperService::toMessageResponse);
     }
 
 

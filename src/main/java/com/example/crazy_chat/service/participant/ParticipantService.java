@@ -1,4 +1,4 @@
-package com.example.crazy_chat.service;
+package com.example.crazy_chat.service.participant;
 
 import com.example.crazy_chat.domains.participant.ParticipantEntity;
 import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class ParticipantService {
 
     private final ParticipantRepository participantRepository;
+    private final ParticipantMapperService participantMapperService;
     private final Sinks.Many<ParticipantChatEventResponse> events = Sinks.many().multicast().directBestEffort();
 
     public ParticipantEntity getCurrentParticipant() {
@@ -38,36 +39,19 @@ public class ParticipantService {
             .orElseThrow(() -> new IllegalStateException("Participant with id " + participantId + " not found"));
     }
 
-    public Optional<ParticipantEntity> fetchParticipantByUsername(String username){
-        return participantRepository.findParticipantEntityByUsername(username);
-    }
-
     public ParticipantEntity save(ParticipantEntity participant){
         return participantRepository.save(participant);
     }
 
-    public List<ParticipantEntity> fetchParticipantsByIds(List<String> participantIds) {
-        return participantRepository.findAllByIdIn(participantIds);
-    }
-
-    public ParticipantResponse toParticipantResponse(ParticipantEntity participant) {
-        return ParticipantResponse.builder()
-            .id(participant.getId())
-            .username(participant.getUsername())
-            .build();
-    }
-
     public List<ParticipantResponse> toParticipantResponse(List<ParticipantEntity> participants) {
-        return participants.stream().map(this::toParticipantResponse).toList();
+        return participants.stream().map(participantMapperService::toParticipantResponse).toList();
     }
 
     public Map<String, List<ParticipantResponse>> fetchParticipantsByChatIds(List<String> participantIds) {
         List<ParticipantEntity> participants = participantRepository.findAllByIdIn(participantIds);
         return participants.stream()
-            .collect(Collectors.groupingBy(
-                ParticipantEntity::getId,
-                Collectors.mapping(this::toParticipantResponse, Collectors.toList())
-            ));
+            .collect(Collectors.groupingBy(ParticipantEntity::getId,
+                Collectors.mapping(participantMapperService::toParticipantResponse, Collectors.toList())));
     }
 
 }
