@@ -1,4 +1,4 @@
-package com.example.crazy_chat.config.s3client;
+package com.example.crazy_chat.config.s3Client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
