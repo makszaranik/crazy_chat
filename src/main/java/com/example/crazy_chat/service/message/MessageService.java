@@ -28,7 +28,7 @@ public class MessageService {
     private final Sinks.Many<MessageEntity> messageBuffer = Sinks.many().multicast().directBestEffort();
     private final MessageMapperService messageMapperService;
 
-    public MessageEntity saveMessage(MessageEntity messageEntity) {
+    public <T extends MessageEntity> T saveMessage(T messageEntity) {
         return messageRepository.save(messageEntity);
     }
 
@@ -63,8 +63,8 @@ public class MessageService {
     }
 
     @Transactional
-    public MessageEntity sendMessageWithOutbox(MessageEntity messageEntity) {
-        MessageEntity savedMessage = saveMessage(messageEntity);
+    public <T extends MessageEntity> T sendMessageWithOutbox(T messageEntity) {
+        T savedMessage = saveMessage(messageEntity);
 
         EventOutBoxEntity outBoxEvent = EventOutBoxEntity.builder()
             .messageId(messageEntity.getId())

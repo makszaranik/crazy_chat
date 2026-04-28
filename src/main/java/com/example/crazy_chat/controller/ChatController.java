@@ -129,7 +129,7 @@ public class ChatController {
             .content(message.content())
             .build();
 
-        TextMessageEntity savedMessage = (TextMessageEntity) messageService.sendMessageWithOutbox(messageEntity);
+        TextMessageEntity savedMessage = messageService.sendMessageWithOutbox(messageEntity);
         chatService.addMessageToChat(message.chatId(), savedMessage);
 
         return TextMessageResponse.builder()
@@ -150,7 +150,7 @@ public class ChatController {
             .s3FileId(message.fileId())
             .build();
 
-        FileMessageEntity savedMessage = (FileMessageEntity) messageService.sendMessageWithOutbox(messageEntity);
+        FileMessageEntity savedMessage = messageService.sendMessageWithOutbox(messageEntity);
         chatService.addMessageToChat(message.chatId(), savedMessage);
 
         return FileMessageResponse.builder()
