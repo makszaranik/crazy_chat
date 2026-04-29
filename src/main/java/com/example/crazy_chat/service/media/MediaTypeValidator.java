@@ -30,9 +30,8 @@ public class MediaTypeValidator {
 
 
     @Scheduled(cron = "0 */1 * * * *")
-    public void validateMediaType() {
-        fileMetadataService.findAllPending().forEach(media -> {
-
+    public void validateMediaType() throws IOException {
+        for (FileMetadataEntity media : fileMetadataService.findAllPending()) {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(s3PropertiesHolder.bucket())
                 .key(media.getFileId())
@@ -52,11 +51,7 @@ public class MediaTypeValidator {
                 }
 
                 fileMetadataService.save(media);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
-        });
+        }
     }
-
 }
