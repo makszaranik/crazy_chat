@@ -1,11 +1,12 @@
 package com.example.crazy_chat.service.media;
 
-import com.example.crazy_chat.config.s3Client.S3ClientConfig;
+import com.example.crazy_chat.config.s3.S3ClientConfig;
 import com.example.crazy_chat.domains.media.FileMetadataEntity;
 import com.example.crazy_chat.dto.file.input.CompleteMultipartRequest;
 import com.example.crazy_chat.dto.file.input.InitMultipartUploadRequest;
 import com.example.crazy_chat.dto.file.output.MultipartUploadResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
@@ -118,5 +119,14 @@ public class S3FileService {
     private long getPartsNumber(int fileSize) {
         long partSize = DataSize.ofMegabytes(10).toBytes();
         return (fileSize + partSize - 1) / partSize;
+    }
+
+    public void deleteFile(String key) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+            .bucket(s3PropertiesHolder.bucket())
+            .key(key)
+            .build();
+
+        s3Client.deleteObject(deleteObjectRequest);
     }
 }

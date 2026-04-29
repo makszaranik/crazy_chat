@@ -1,6 +1,6 @@
 package com.example.crazy_chat.repository;
 
-import com.example.crazy_chat.domains.eventOutbox.EventOutBoxEntity;
+import com.example.crazy_chat.domains.message.eventOutbox.EventOutBoxEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

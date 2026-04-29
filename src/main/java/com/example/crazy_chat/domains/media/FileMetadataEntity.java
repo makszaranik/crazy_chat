@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Data
 @Builder
@@ -23,10 +24,17 @@ public class FileMetadataEntity {
     private int fileName;
     private int contentLength;
     private String contentType;
+    private ValidationStatus status;
 
     @CreatedBy
     private String uploaderId;
 
     @CreatedDate
     private LocalDateTime uploadedDate;
+
+    public enum ValidationStatus {
+        PENDING,
+        VALID,
+        REJECTED
+    }
 }

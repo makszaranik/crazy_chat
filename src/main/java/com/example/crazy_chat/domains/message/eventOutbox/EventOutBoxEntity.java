@@ -1,4 +1,4 @@
-package com.example.crazy_chat.domains.eventOutbox;
+package com.example.crazy_chat.domains.message.eventOutbox;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

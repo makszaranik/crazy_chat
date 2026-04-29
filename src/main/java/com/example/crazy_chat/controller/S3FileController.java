@@ -9,6 +9,7 @@ import com.example.crazy_chat.service.media.S3FileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.tika.Tika;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -27,7 +28,6 @@ public class S3FileController {
 
     private final S3FileService s3FileService;
     private final FileMetadataService fileMetadataService;
-
 
     @MutationMapping
     //@PreAuthorize("isAuthenticated()")

@@ -1,7 +1,7 @@
 package com.example.crazy_chat.service.message;
 
 import com.example.crazy_chat.domains.message.MessageEntity;
-import com.example.crazy_chat.domains.eventOutbox.EventOutBoxEntity;
+import com.example.crazy_chat.domains.message.eventOutbox.EventOutBoxEntity;
 import com.example.crazy_chat.dto.participant.output.ParticipantChatEventResponse;
 import com.example.crazy_chat.repository.EventOutboxRepository;
 import com.example.crazy_chat.service.participant.ParticipantService;

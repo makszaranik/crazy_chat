@@ -6,6 +6,8 @@ import com.example.crazy_chat.repository.FileMetadataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FileMetadataService {
@@ -19,6 +21,10 @@ public class FileMetadataService {
     public FileMetadataEntity findMetadataEntityById(String id) {
         return repository.findById(id)
             .orElseThrow(() -> new NoSuchMetadataEntity("Metadata with id " + id + " not found"));
+    }
+
+    public List<FileMetadataEntity> findAllPending() {
+        return repository.findFileMetadataEntityByStatus(FileMetadataEntity.ValidationStatus.PENDING);
     }
 
 }
